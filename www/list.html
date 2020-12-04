@@ -1,0 +1,63 @@
+<ons-page>
+  <ons-navigator id="photoNav" page="list-page.html">
+  </ons-navigator>
+  <template id="list-page.html">
+    <ons-page>
+      <ons-toolbar>
+        <div class="center" id="toolbar-title">写真</div>
+      </ons-toolbar>
+      <div style="text-align: center; padding-top: 50px;">
+        <ons-row id="photos">
+        </ons-row>
+      </div>
+    </ons-page>
+  </template>
+  <script>
+    ons.getScriptPage().onShow = async function() {
+      showPhotos.bind(this)();
+    }
+
+    async function showPhotos() {
+      ncmb.User.getCurrentUser();
+      const Memo = ncmb.DataStore('Memo');
+      const memos = await Memo
+        .order('createDate', true)
+        .limit(100)
+        .fetchAll();
+      const photos = this.querySelector('#photos');
+      photos.innerHTML = '';
+      memos.forEach(memo => {
+        const dom = document.createElement('ons-col');
+        dom.innerHTML = `
+          <ons-card>
+            <img class="photo" src="http://placehold.jp/150x150.png" width="150px" />
+          </ons-card>
+        `;
+        photos.appendChild(dom);
+        ncmb.File.download(memo.get('photo'), 'blob')
+          .then(async (photo) => {
+            const img = dom.querySelector('img');
+            img.src = await loadPhoto(photo);
+            dom.onclick = () => {
+              this.querySelector('#photoNav').pushPage('viewer.html', {
+                data: {
+                  memo,
+                  photo
+                }
+              });
+            }
+          });
+      });
+    }
+
+    
+  </script>
+  <style>
+    img.photo {
+      object-fit: contain;
+      width: 150px;
+      height: 150px;
+    }
+  </style>
+  
+</ons-page>

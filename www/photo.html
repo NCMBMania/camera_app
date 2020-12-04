@@ -1,0 +1,82 @@
+<ons-page>
+  <ons-toolbar>
+    <div class="left"><ons-back-button>カメラ</ons-back-button></div>
+    <div class="center" id="toolbar-title">メモを書く</div>
+  </ons-toolbar>
+  <div style="text-align: center; margin-top: 20px;">
+    <ons-card style="text-align: center;">
+      <img src="http://placehold.jp/300x400.png" id="photo" width="300px" height="400px" />
+    </ons-card>
+    <p>
+      <textarea class="textarea" rows="5" cols="45" placeholder="メモを書いてください" id="memo"></textarea>
+    </p>
+    <ons-icon size="30px" id="spin" spin icon="md-spinner"></ons-icon>
+    <ons-button modifier="large" id="save">保存する</ons-button>
+  </div>
+  <script>
+    ons.getScriptPage().onShow = async function() {
+      showPhoto.bind(this)(this.data.photo);
+    }
+
+    ons.getScriptPage().onInit = async function() {
+      this.querySelector('#save').onclick = saveMemo.bind(this);
+    }
+
+    async function saveMemo() {
+      this.querySelector('#save').style.display = 'none';
+      this.querySelector('#spin').style.display = 'block';
+      const body = this.querySelector('#memo').value;
+      const { photo } = this.data;
+      const user = ncmb.User.getCurrentUser();
+      const fileName = `${user.get('userName')}-${(new Date).getTime()}-${photo.name}`;
+      try {
+        await uploadPhoto(fileName, photo);
+        await addMemo(fileName, body);
+        document.querySelector('#tabbar').setActiveTab(1);
+        ons.notification.alert('アップロード完了しました');
+      } catch (e) {
+        console.log(e);
+        ons.notification.alert('アップロード中にエラーが発生しました');
+      }
+      this.querySelector('#save').style.display = 'block';
+      this.querySelector('#spin').style.display = 'none';
+    }
+
+    async function uploadPhoto(fileName, photo) {
+      await ncmb.File.upload(fileName, photo, getAcl());
+    }
+
+    async function addMemo(fileName, body) {
+      const Memo = ncmb.DataStore('Memo');
+      const memo = new Memo();
+      await memo
+        .set('photo', fileName)
+        .set('body', body)
+        .set('acl', getAcl())
+        .save();
+    }
+
+    function getAcl() {
+      const user = ncmb.User.getCurrentUser();
+      const acl = new ncmb.Acl();
+      acl
+        .setUserReadAccess(user, true)
+        .setUserWriteAccess(user, true);
+      return acl;
+    }
+
+    async function showPhoto(photo) {
+      const data = await loadPhoto(photo);
+      this.querySelector('#photo').src = data;
+    }
+
+  </script>
+  <style>
+    img#photo {
+      object-fit: contain;
+    }
+    #spin {
+      display: none;
+    }
+  </style>
+</ons-page>

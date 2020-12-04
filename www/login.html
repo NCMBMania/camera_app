@@ -1,0 +1,48 @@
+<ons-page>
+  <ons-toolbar>
+    <div class="center" id="form-title">新規登録/ログイン</div>
+  </ons-toolbar>
+  <div style="text-align: center; margin-top: 60px;"></div>
+    <p style="text-align: center;">
+      <ons-input id="userName" modifier="underbar" placeholder="ユーザ名" float></ons-input>
+    </p>
+    <p style="text-align: center;">
+      <ons-input id="password" modifier="underbar" type="password" placeholder="パスワード" float></ons-input>
+    </p>
+    <p style="margin-top: 30px;text-align: center;">
+      <ons-button id="login">登録/ログイン</ons-button>
+    </p>
+  </div>
+
+  <script>
+    async function signInOrLogin() {
+      const userName = this.querySelector('#userName').value;
+      const password = this.querySelector('#password').value;
+      try {
+        await registerUser(userName, password);
+      } catch (e) {
+      }
+      // ログイン処理
+      try {
+        await ncmb.User.login(userName, password);
+        document.querySelector('#nav').resetToPage('camera.html');
+      } catch (e) {
+        ons.notification.alert('ログイン失敗しました。ユーザ名、パスワードを確認してください');
+        return false;
+      }
+    }
+
+    ons.getScriptPage().onInit = function() {
+      this.querySelector('#login').onclick = signInOrLogin.bind(this);
+    }
+
+    // 新規ユーザ登録処理です
+    async function registerUser(userName, password) {
+      const user = new ncmb.User();
+      user
+        .set('userName', userName)
+        .set('password', password)
+      return await user.signUpByAccount();
+    }
+  </script>
+</ons-page>

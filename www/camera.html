@@ -1,0 +1,45 @@
+<ons-page>
+  <ons-navigator id="nav">
+    <ons-toolbar>
+      <div class="center" id="toolbar-title">カメラ</div>
+    </ons-toolbar>
+    <div style="text-align: center; margin-top: 150px;">
+      <ons-card style="text-align: center;">
+        <ons-icon icon="fa-camera" size="180px" id="camera"></ons-icon>
+      </ons-card>
+      <div style="display: none;">
+        <input type="file" id="photo" accept="image/*">
+      </div>
+    </div>
+  </ons-navigator>
+  <script>
+    ons.getScriptPage().onShow = async function() {
+      const user = ncmb.User.getCurrentUser();
+      if (!user) {
+        document.querySelector('#nav').pushPage('login.html');
+      }
+      try {
+        await ncmb.DataStore('Hello').fetch();
+      } catch (e) {
+        localStorage.removeItem(`NCMB/${ncmb.apikey}/CurrentUser`);
+        ncmb.sessionToken = null;
+        document.querySelector('#nav').pushPage('login.html');
+      }
+    }
+
+    ons.getScriptPage().onInit = async function() {
+      this.querySelector('#camera').onclick = showDialog.bind(this);
+      this.querySelector('#photo').onchange = showMemo.bind(this);
+    }
+
+    async function showDialog() {
+      this.querySelector('#photo').click();
+    }
+
+    async function showMemo(e) {
+      document.querySelector('#nav').pushPage('photo.html', {data: {
+        photo: e.target.files[0]}
+      });
+    }
+  </script>
+</ons-page>

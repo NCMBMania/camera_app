@@ -1,0 +1,32 @@
+<ons-page>
+  <ons-toolbar>
+    <div class="left"><ons-back-button>一覧</ons-back-button></div>
+    <div class="center" id="toolbar-title">メモ</div>    
+  </ons-toolbar>
+  <div style="text-align: center; padding-top: 50px;">
+    <ons-card style="text-align: center;">
+      <img src="http://placehold.jp/350x350.png" id="photo" width="350px" height="350px" />
+    </ons-card>
+    <p id="body">
+    </p>
+  </div>
+
+  <script>
+    ons.getScriptPage().onShow = async function() {
+      showPhoto.bind(this)();
+    }
+
+    async function showPhoto() {
+      const img = this.querySelector('#photo');
+      img.src = await loadPhoto(this.data.photo);
+      this.querySelector('#body').innerText = this.data.memo.get('body');
+    }
+  </script>
+  <style>
+    img#photo {
+      object-fit: contain;
+      width: 350px;
+      height: 350px;
+    }
+  </style>
+</ons-page>
