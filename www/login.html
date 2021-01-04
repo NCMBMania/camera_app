@@ -24,7 +24,7 @@
       }
       // ログイン処理
       try {
-        await ncmb.User.login(userName, password);
+        // ログイン実行
         document.querySelector('#nav').resetToPage('camera.html');
       } catch (e) {
         ons.notification.alert('ログイン失敗しました。ユーザ名、パスワードを確認してください');
@@ -38,11 +38,6 @@
 
     // 新規ユーザ登録処理です
     async function registerUser(userName, password) {
-      const user = new ncmb.User();
-      user
-        .set('userName', userName)
-        .set('password', password)
-      return await user.signUpByAccount();
     }
   </script>
 </ons-page>

@@ -30,7 +30,9 @@
       const user = ncmb.User.getCurrentUser();
       const fileName = `${user.get('userName')}-${(new Date).getTime()}-${photo.name}`;
       try {
+        // 写真をアップロードします
         await uploadPhoto(fileName, photo);
+        // アップロードした写真にメモを紐付けます
         await addMemo(fileName, body);
         document.querySelector('#tabbar').setActiveTab(1);
         ons.notification.alert('アップロード完了しました');
@@ -42,27 +44,17 @@
       this.querySelector('#spin').style.display = 'none';
     }
 
+    // ファイルのアップロード処理です
     async function uploadPhoto(fileName, photo) {
-      await ncmb.File.upload(fileName, photo, getAcl());
     }
 
+    // メモの保存処理です
     async function addMemo(fileName, body) {
-      const Memo = ncmb.DataStore('Memo');
-      const memo = new Memo();
-      await memo
-        .set('photo', fileName)
-        .set('body', body)
-        .set('acl', getAcl())
-        .save();
     }
 
+    // ACLを作成します
+    // ユーザだけが読み込み、書き込み可能とします
     function getAcl() {
-      const user = ncmb.User.getCurrentUser();
-      const acl = new ncmb.Acl();
-      acl
-        .setUserReadAccess(user, true)
-        .setUserWriteAccess(user, true);
-      return acl;
     }
 
     async function showPhoto(photo) {

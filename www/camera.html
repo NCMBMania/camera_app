@@ -14,17 +14,6 @@
   </ons-navigator>
   <script>
     ons.getScriptPage().onShow = async function() {
-      const user = ncmb.User.getCurrentUser();
-      if (!user) {
-        document.querySelector('#nav').pushPage('login.html');
-      }
-      try {
-        await ncmb.DataStore('Hello').fetch();
-      } catch (e) {
-        localStorage.removeItem(`NCMB/${ncmb.apikey}/CurrentUser`);
-        ncmb.sessionToken = null;
-        document.querySelector('#nav').pushPage('login.html');
-      }
     }
 
     ons.getScriptPage().onInit = async function() {
