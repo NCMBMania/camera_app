@@ -23,24 +23,33 @@
     }
 
     async function saveMemo() {
+      // まずボタンを多重で押されないようにします
       this.querySelector('#save').style.display = 'none';
       this.querySelector('#spin').style.display = 'block';
+      // 必要な変数を準備します
       const body = this.querySelector('#memo').value;
       const { photo } = this.data;
+      // 投稿するユーザ情報
       const user = ncmb.User.getCurrentUser();
       const fileName = `${user.get('userName')}-${(new Date).getTime()}-${photo.name}`;
+
       try {
-        // 写真をアップロードします
+        // 写真のアップロード処理
         await uploadPhoto(fileName, photo);
-        // アップロードした写真にメモを紐付けます
+
+        // メモをデータストアに保存
         await addMemo(fileName, body);
+        // メモを保存したらタブを一覧に変更する
         document.querySelector('#tabbar').setActiveTab(1);
+        // アラートでアップロード完了を通知
         ons.notification.alert('アップロード完了しました');
       } catch (e) {
-        console.log(e);
+
         ons.notification.alert('アップロード中にエラーが発生しました');
       }
+      // ボタンを再度押せるように
       this.querySelector('#save').style.display = 'block';
+      // スピナーを消す
       this.querySelector('#spin').style.display = 'none';
     }
 

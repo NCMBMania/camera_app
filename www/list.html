@@ -14,24 +14,23 @@
   </template>
   <script>
     ons.getScriptPage().onShow = async function() {
+      // 写真を表示する処理
       showPhotos.bind(this)();
     }
 
     async function showPhotos() {
       ncmb.User.getCurrentUser();
       const photos = this.querySelector('#photos');
+      // 現在の内容をクリア
       photos.innerHTML = '';
-
+      // メモ一覧を取得
       const memo = await loadMemos();
+      // メモを表示
       showMemo(photos, memo);
     }
 
+    // メモ一覧を取得する処理
     async function loadMemos() {
-      const Memo = ncmb.DataStore('Memo');
-      return await Memo
-        .order('createDate', true)
-        .limit(100)
-        .fetchAll();
     }
 
     function showMemo(photos, memos) {
@@ -43,13 +42,16 @@
           </ons-card>
         `;
         photos.appendChild(dom);
+        // NCMBから写真をバイナリデータとしてダウンロード
         ncmb.File.download(memo.get('photo'), 'blob')
           .then(photo => {
+            // ダウンロードできたら、表示
             toView.bind(this)(dom, memo, photo);
           });
       });
     }
     
+    // 画像の表示 + タップ時に viewer.html で表示する処理
     async function toView(dom, memo, photo) {
       const img = dom.querySelector('img');
       img.src = await loadPhoto(photo);

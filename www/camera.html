@@ -13,18 +13,38 @@
     </div>
   </ons-navigator>
   <script>
-    ons.getScriptPage().onShow = async function() {
-    }
-
+    // 画面が初期化される際の処理
     ons.getScriptPage().onInit = async function() {
       this.querySelector('#camera').onclick = showDialog.bind(this);
       this.querySelector('#photo').onchange = showMemo.bind(this);
     }
 
+    // 画面が表示された際の処理
+    ons.getScriptPage().onShow = async function() {
+      const user = null; // ← 書き換えます
+      if (!user) {
+        // ログインしていない場合はログイン画面に遷移
+        return document.querySelector('#nav').pushPage('login.html');
+      }
+      try {
+        // セッションの有効性チェック
+
+      } catch (e) {
+        // エラー = セッションが無効の場合
+        localStorage.removeItem(`NCMB/${ncmb.apikey}/CurrentUser`); // 強制的にlocalStorageを削除
+        ncmb.sessionToken = null; // セッショントークンも削除
+        // ログイン画面に遷移
+        document.querySelector('#nav').pushPage('login.html');
+      }
+      // ログインしている場合はここに来る（特に処理なし）
+    }
+
+    // 写真選択ダイアログの表示
     async function showDialog() {
       this.querySelector('#photo').click();
     }
 
+    // 写真を選択した後、photo.htmlに遷移
     async function showMemo(e) {
       document.querySelector('#nav').pushPage('photo.html', {data: {
         photo: e.target.files[0]}

@@ -16,17 +16,23 @@
 
   <script>
     async function signInOrLogin() {
+      // 必要な変数を揃えます
       const userName = this.querySelector('#userName').value;
       const password = this.querySelector('#password').value;
       try {
+        // ユーザ登録処理を実行
+        // すでに同名でユーザ登録済みの場合、エラーになります
         await registerUser(userName, password);
       } catch (e) {
+        // すでに同名でユーザ登録済みの場合、こちらにきます（エラーは無視します）
       }
-      // ログイン処理
       try {
         // ログイン実行
+
+        // カメラ画面に戻ります
         document.querySelector('#nav').resetToPage('camera.html');
       } catch (e) {
+        // ログイン失敗した場合
         ons.notification.alert('ログイン失敗しました。ユーザ名、パスワードを確認してください');
         return false;
       }
